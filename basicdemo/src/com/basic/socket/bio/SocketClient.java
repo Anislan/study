@@ -1,4 +1,4 @@
-package com.basic.socket.tcp;
+package com.basic.socket.bio;
 
 import java.io.*;
 import java.net.Socket;
