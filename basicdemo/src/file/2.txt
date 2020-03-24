@@ -1,0 +1,62 @@
+hello nio!
+Java NIO FileChannel与FileOutputStream的性能/有用性
+
+我想弄清楚当我们使用nio时，在性能(或优势)上是否有什么不同。FileChannel与正常FileInputStream/FileOuputStream将文件读写到文件系统。我观察到，在我的机器上，两台机器的性能都是相同的，而且很多次FileChannel路慢了。我能知道更多比较这两种方法的细节吗？下面是我使用的代码，我正在测试的文件就在附近。350MB..如果我不考虑随机访问或其他高级特性，那么使用基于NIO的类进行文件I/O是一个很好的选择吗？
+
+package trialjavaprograms;import java.io.File;import java.io.FileInputStream;import java.io.FileOutputStream;import java.io.InputStream;import java.nio.ByteBuffer;import java.nio.channels.FileChannel;public class JavaNIOTest {
+    public static void main(String[] args) throws Exception {
+        useNormalIO();
+        useFileChannel();
+    }
+
+    private static void useNormalIO() throws Exception {
+        File file = new File("/home/developer/test.iso");
+        File oFile = new File("/home/developer/test2");
+
+        long time1 = System.currentTimeMillis();
+        InputStream is = new FileInputStream(file);
+        FileOutputStream fos = new FileOutputStream(oFile);
+        byte[] buf = new byte[64 * 1024];
+        int len = 0;
+        while((len = is.read(buf)) != -1) {
+            fos.write(buf, 0, len);
+        }
+        fos.flush();
+        fos.close();
+        is.close();
+        long time2 = System.currentTimeMillis();
+        System.out.println("Time taken: "+(time2-time1)+" ms");
+    }
+
+
+    我处理大文件的经验是java.nio比java.io. 更快。比如在超过250%的范围内。尽管如此，我正在消除明显的瓶颈，我建议你的微基准可能会受到影响。潜在调查领域：
+
+    缓冲区大小。你的基本算法是
+
+    从磁盘复制到缓冲区
+    从缓冲区复制到磁盘
+    我自己的经验是这个缓冲区的大小是成熟调音。我已经确定了我的应用程序的一个部分是4KB，另一部分是256 KB。我怀疑您的代码正在遭受这么大的缓冲区。使用1KB、2kb、4KB、8KB、16 KB、32 KB和64 KB的缓冲区运行一些基准测试来证明这一点。
+
+    不要执行对同一个磁盘进行读写的java基准测试。
+
+    如果您这样做了，那么您实际上是在对磁盘进行基准测试，而不是Java。我还建议，如果您的CPU不忙，那么您可能正在经历其他瓶颈。
+
+    如果不需要的话，不要使用缓冲区。
+
+    如果您的目标是另一个磁盘或NIC，为什么要复制到内存？对于较大的文件，隐藏的延迟是不平凡的。
+
+    就像其他人说的，用FileChannel.transferTo()或FileChannel.transferFrom()..这里的主要优点是JVM使用操作系统对DMA的访问(直接储存器)，如果存在的话。(这是依赖于实现的，但是通用CPU上的现代Sun和IBM版本是很好的选择。)所发生的是数据直接进入/从光盘，到总线，然后到达目的地.绕过任何通过RAM或CPU的电路。
+
+    我白天和晚上都在做的这个网络应用程序是非常沉重的IO。我也做过微观基准和现实世界基准。结果出现在我的博客上，请看一看：
+
+    真实世界性能指标：java.io与java.nio
+
+    真实世界性能指标：java.io与java.nio(续集)
+
+    使用生产数据和环境
+
+    微基准容易失真。如果可以的话，努力从您计划做的事情中收集数据，并根据您期望的负载，在您期望的硬件上收集数据。
+
+    我的基准测试是可靠的，因为它们发生在一个生产系统，一个强大的系统，一个负载下的系统，收集在日志中。不我的笔记本电脑的7200 RPM2.5“SATA驱动器，而我强烈地看着JVM工作我的硬盘。
+
+    你在跑什么？这很重要。
