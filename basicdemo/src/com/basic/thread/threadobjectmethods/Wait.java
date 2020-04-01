@@ -15,7 +15,7 @@ public class Wait {
             synchronized (object){
                 System.out.println(Thread.currentThread().getName()+"开始执行了");
                 try {
-                    // 如果遇到中断就会抛出异常.释放掉锁了,并且阻塞状态
+                    // 如果遇到中断就会抛出异常。释放掉锁了,并且阻塞状态
                     object.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -40,7 +40,7 @@ public class Wait {
         Thread2 thread2 = new Thread2();
         thread1.start();
         try {
-            Thread.sleep(200);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
