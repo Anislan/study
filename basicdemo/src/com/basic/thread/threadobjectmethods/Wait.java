@@ -15,6 +15,7 @@ public class Wait {
             synchronized (object){
                 System.out.println(Thread.currentThread().getName()+"开始执行了");
                 try {
+                    // wait(）执行时，必须要monitor对象锁，才能调用此方法，否则将会抛异常
                     // 如果遇到中断就会抛出异常。释放掉锁了,并且阻塞状态
                     object.wait();
                 } catch (InterruptedException e) {
@@ -29,6 +30,8 @@ public class Wait {
         @Override
         public void run() {
             synchronized (object){
+                // notify/nofifyall都必须持有对象锁，才能调用此方法，否则将会抛异常
+                // notify()唤醒策略是随机的,当有多个线程由wait方法进入阻塞了
                 object.notify();
                 System.out.println(Thread.currentThread().getName()+"调用了notify（）");
             }

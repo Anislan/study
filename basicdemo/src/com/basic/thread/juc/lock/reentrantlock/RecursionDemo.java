@@ -2,6 +2,9 @@ package com.basic.thread.juc.lock.reentrantlock;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ *  可重入锁
+ */
 public class RecursionDemo {
 
     private static ReentrantLock lock = new ReentrantLock();

@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
  */
 public class FixedThreadPollOOM {
 
-    private static ExecutorService executorService = Executors.newFixedThreadPool(1);
+    private static ExecutorService executorService = Executors.newFixedThreadPool(5);
 
     public static void main(String[] args) {
         for (int i = 0; i < Integer.MAX_VALUE; i++) {
@@ -23,7 +23,9 @@ class  SubThread implements  Runnable{
     @Override
     public void run() {
         try {
-            Thread.sleep(1000000000);
+            System.out.println("SubThread ... 正在执行");
+            Thread.sleep(10);
+           // Thread.sleep(1000000000);
         }catch (InterruptedException  e){
 
         }

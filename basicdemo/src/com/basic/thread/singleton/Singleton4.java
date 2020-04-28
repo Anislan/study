@@ -16,7 +16,6 @@ public class Singleton4 {
      * @return
      */
     public synchronized static Singleton4 getInstance(){
-        // 两个线程同时判断为null，都去创建实例，则创建两个，不符合单例模式
         if(null == instance){
             instance = new Singleton4();
         }
