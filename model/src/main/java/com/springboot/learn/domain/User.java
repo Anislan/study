@@ -1,35 +1,56 @@
 package com.springboot.learn.domain;
 
+import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+
 /**
  *  用户模型
  */
+@Data
+@Entity
 public class User
 {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String name;
 
-    public int getId() {
-        return id;
+    /**
+     *  数据库层面校验
+     *  @NotBlank是应用层面，在sql执行前校验，不管数据库层面是否为空
+     *  nullable 是sql执行时校验
+     */
+    @NotBlank(message = "用户名不能为空")
+    @Column(unique = true,name = "user_name",table = "user",nullable = true)
+    private String userName;
+
+    private String password;
+
+    private String permissions;
+
+    public User() {
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public UserInfo buildInfo(){
+        UserInfo userInfo = new UserInfo();
+        BeanUtils.copyProperties(this,userInfo);
+        return userInfo;
     }
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public boolean hasPermission(String method) {
+        boolean result = false;
+        if (StringUtils.endsWithIgnoreCase("get",method)){
+            result = StringUtils.contains(permissions,"r");
+        }else {
+            result = StringUtils.contains(permissions,"w");
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        }
+        return result;
     }
 }

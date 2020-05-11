@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@Service
+//@Service
 public class RedisServiceImpl {
 
-    @Autowired
+//    @Autowired
     private StringRedisTemplate stringRedisTemplate;
-    @Autowired
+//    @Autowired
     private Jedis jedis;
 
     public void setStr(String key, Object value) {

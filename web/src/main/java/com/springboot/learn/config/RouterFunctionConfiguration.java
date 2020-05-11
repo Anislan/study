@@ -18,7 +18,7 @@ import java.util.Collections;
 /**
  *  路由函数 配置
  */
-@Configuration
+//@Configuration
 public class RouterFunctionConfiguration {
 
     /**
@@ -37,8 +37,8 @@ public class RouterFunctionConfiguration {
      *   集合对象基本上是同步处理（阻塞）
      *   Flux 或者 Mono 都是Publisher
      */
-    @Bean
-    @Autowired
+//    @Bean
+//    @Autowired
     public RouterFunction<ServerResponse> personFindAll(UserRepository userRepository){
 
       return   RouterFunctions.route(RequestPredicates.GET("/person/find/all"),request -> {

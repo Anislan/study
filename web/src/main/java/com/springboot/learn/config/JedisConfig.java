@@ -6,10 +6,10 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisShardInfo;
 
-@Configuration
+//@Configuration
 public class JedisConfig {
 
-    @Bean
+//    @Bean
     public Jedis jedis(){
         //连接redis服务器，192.168.0.100:6379
         Jedis jedis = new Jedis("123.57.33.87", 6379);

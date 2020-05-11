@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@RestController
+//@RestController
 public class RedisServiceController
 
 {
-    @Autowired
+//    @Autowired
     private RedisServiceImpl redisService;
 
     @RequestMapping(value = "/setredis")

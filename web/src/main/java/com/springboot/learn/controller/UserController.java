@@ -1,31 +1,75 @@
 package com.springboot.learn.controller;
 
 import com.springboot.learn.domain.User;
+import com.springboot.learn.domain.UserInfo;
+import com.springboot.learn.reprository.IUserRepository;
 import com.springboot.learn.reprository.UserRepository;
+import com.springboot.learn.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
+@RequestMapping("/users")
 public class UserController
 {
 
-    private  final UserRepository userRepository;
+
+    private UserService userService;
 
     @Autowired
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @PostMapping("/person/save")
-    public User save(@RequestParam String name){
-        User user = new User();
-        user.setName(name);
-        if(userRepository.save(user)){
-            System.out.printf("用户对象: %s 保存成功! \n ", user);
-        };
 
-        return user;
+    /**
+     *  接口层面数据校验
+     * @param userInfo
+     * @return
+     */
+    @PostMapping
+    public UserInfo create(@RequestBody @Validated UserInfo userInfo){
+//        User user = new User();
+//        user.setName(name);
+//        if(userRepository.save(user)){
+//            System.out.printf("用户对象: %s 保存成功! \n ", user);
+//        };
+//
+        return userService.create(userInfo);
     }
+
+    @PutMapping("/{id}")
+    public UserInfo update(@RequestBody UserInfo user){
+        return userService.update(user);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id){
+        userService.delete(id);
+    }
+
+    @GetMapping("/{id}")
+    public UserInfo get(@PathVariable Long id, HttpServletRequest request){
+        // 用户来获取用户信息
+        User user = (User) request.getAttribute("user");
+        if (user == null || !user.getId().equals(id)) {
+            throw new RuntimeException("身份认真信息异常，获取用户信息失败");
+        }
+        return userService.get(id);
+    }
+
+    @GetMapping
+    public List<UserInfo> query(String name){
+        return  userService.query(name);
+        //        String sql = "SELECT id,username FROM homepage_user where username = '"+name+"'";
+//        List datas = jdbcTemplate.queryForList(sql);
+//        return iUserRepository.findByName(name);
+    }
+
 }

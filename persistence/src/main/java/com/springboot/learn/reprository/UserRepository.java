@@ -30,10 +30,12 @@ public class UserRepository {
      */
     public boolean save(User user){
 
-        // ID 从1开始
-       Integer id= idGenerator.incrementAndGet();
-        user.setId(id);
-        return repository.put(id,user) == null;
+//        // ID 从1开始
+//       Integer id= idGenerator.incrementAndGet();
+//        user.setId(id);
+//        return repository.put(id,user) == null;
+
+        return  true;
     }
 
     public Collection<User> findAll(){

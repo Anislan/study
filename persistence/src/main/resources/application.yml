@@ -1,12 +1,6 @@
 spring:
-  redis:
-    database: 0
-    host: 123.57.33.87
-    port: 6379
-    password: 123456
-spring:
   application:
-    name: user-api-web
+    name: user-api-persistence
   datasource:
     url: jdbc:mysql://123.57.33.87:3306/study?characterEncoding=utf8&characterSetResults=utf8&autoReconnect=true
     username: root
