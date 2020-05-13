@@ -28,6 +28,7 @@ public class BasicAuthecationFilter extends OncePerRequestFilter{
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // 基于Http Basic来做流控,Basic会在请求头传入用户名和密码
         String authHeader = request.getHeader("Authorization");
         if (StringUtils.isNotBlank(authHeader)) {
             String token64 = StringUtils.substringAfter(authHeader,"Basic ");
@@ -40,6 +41,7 @@ public class BasicAuthecationFilter extends OncePerRequestFilter{
             User user = iUserRepository.findByUserName(username);
 
 //            if (user != null && StringUtils.equals(password,user.getPassword())) {
+            // 使用加密工具校验
             if (user != null && SCryptUtil.check(password,user.getPassword())) {
                 request.getSession().setAttribute("user",user.buildInfo());
                 request.getSession().setAttribute("temp","yes");

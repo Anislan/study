@@ -2,6 +2,7 @@ package com.springboot.learn.filter;
 
 import com.springboot.learn.domain.AuditLog;
 import com.springboot.learn.domain.User;
+import com.springboot.learn.domain.UserInfo;
 import com.springboot.learn.reprository.AuditLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
@@ -11,9 +12,12 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class AuditLogInterceptor extends HandlerInterceptorAdapter{
+
 
     @Autowired
     private AuditLogRepository auditLogRepository;
@@ -23,21 +27,20 @@ public class AuditLogInterceptor extends HandlerInterceptorAdapter{
         AuditLog log = new AuditLog();
         log.setMethod(request.getMethod());
         log.setPath(request.getRequestURI());
-        User user = (User) request.getSession().getAttribute("user");
+        UserInfo user = (UserInfo) request.getSession().getAttribute("user");
         if (user != null) {
             log.setUserName(user.getUserName());
         }
         auditLogRepository.save(log);
-
-        request.getSession().setAttribute("auditLogId",log.getId());
+        request.setAttribute("auditLogId",log.getId());
 
         return true;
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable Exception ex) throws Exception {
-
-        Long auditLogId = (Long) request.getSession().getAttribute("auditLogId");
+;
+        Long auditLogId= (Long) request.getAttribute("auditLogId");
 
         AuditLog log = auditLogRepository.findById(auditLogId).get();
 
