@@ -52,4 +52,14 @@ public class UserServiceImpl implements UserService {
     public List<UserInfo> query(String name) {
         return null;
     }
+
+    @Override
+    public UserInfo login(UserInfo userInfo) {
+        UserInfo result = null;
+        User user = iUserRepository.findByUserName(userInfo.getUserName());
+        if(user != null && SCryptUtil.check(userInfo.getPassword(), user.getPassword())) {
+            result = user.buildInfo();
+        }
+        return result;
+    }
 }

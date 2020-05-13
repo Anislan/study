@@ -23,13 +23,13 @@ public class AuditLogInterceptor extends HandlerInterceptorAdapter{
         AuditLog log = new AuditLog();
         log.setMethod(request.getMethod());
         log.setPath(request.getRequestURI());
-        User user = (User) request.getAttribute("user");
+        User user = (User) request.getSession().getAttribute("user");
         if (user != null) {
             log.setUserName(user.getUserName());
         }
         auditLogRepository.save(log);
 
-        request.setAttribute("auditLogId",log.getId());
+        request.getSession().setAttribute("auditLogId",log.getId());
 
         return true;
     }
@@ -37,7 +37,7 @@ public class AuditLogInterceptor extends HandlerInterceptorAdapter{
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable Exception ex) throws Exception {
 
-        Long auditLogId = (Long) request.getAttribute("auditLogId");
+        Long auditLogId = (Long) request.getSession().getAttribute("auditLogId");
 
         AuditLog log = auditLogRepository.findById(auditLogId).get();
 

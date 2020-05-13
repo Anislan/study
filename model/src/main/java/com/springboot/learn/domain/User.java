@@ -33,6 +33,7 @@ public class User
 
     private String permissions;
 
+
     public User() {
     }
 
@@ -43,14 +44,5 @@ public class User
     }
 
 
-    public boolean hasPermission(String method) {
-        boolean result = false;
-        if (StringUtils.endsWithIgnoreCase("get",method)){
-            result = StringUtils.contains(permissions,"r");
-        }else {
-            result = StringUtils.contains(permissions,"w");
 
-        }
-        return result;
-    }
 }

@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,22 @@ public class UserController
         this.userService = userService;
     }
 
+
+    @GetMapping("/login")
+    public void login(@Validated UserInfo userInfo,HttpServletRequest request){
+        UserInfo info = userService.login(userInfo);
+        // 调用getSession方法，在服务端生成一个sessionId
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        request.getSession(true).setAttribute("user",info);
+    }
+
+    @GetMapping("/logout")
+    public void logout(HttpServletRequest request){
+        request.getSession().invalidate();;
+    }
 
     /**
      *  接口层面数据校验
@@ -57,7 +74,7 @@ public class UserController
     @GetMapping("/{id}")
     public UserInfo get(@PathVariable Long id, HttpServletRequest request){
         // 用户来获取用户信息
-        User user = (User) request.getAttribute("user");
+        UserInfo user = (UserInfo) request.getSession().getAttribute("user");
         if (user == null || !user.getId().equals(id)) {
             throw new RuntimeException("身份认真信息异常，获取用户信息失败");
         }

@@ -1,6 +1,7 @@
 package com.springboot.learn.domain;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,7 +26,21 @@ public class UserInfo
     @NotBlank(message = "密码不能为空")
     private String password;
 
+    private String permissions;
+
+
     public UserInfo() {
+    }
+
+    public boolean hasPermission(String method,String permissions) {
+        boolean result = false;
+        if (StringUtils.endsWithIgnoreCase("get",method)){
+            result = StringUtils.contains(permissions,"r");
+        }else {
+            result = StringUtils.contains(permissions,"w");
+
+        }
+        return result;
     }
 
    

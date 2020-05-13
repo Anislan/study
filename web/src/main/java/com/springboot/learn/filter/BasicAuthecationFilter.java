@@ -2,6 +2,7 @@ package com.springboot.learn.filter;
 
 import com.lambdaworks.crypto.SCryptUtil;
 import com.springboot.learn.domain.User;
+import com.springboot.learn.domain.UserInfo;
 import com.springboot.learn.reprository.IUserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Base64;
 
@@ -39,11 +41,19 @@ public class BasicAuthecationFilter extends OncePerRequestFilter{
 
 //            if (user != null && StringUtils.equals(password,user.getPassword())) {
             if (user != null && SCryptUtil.check(password,user.getPassword())) {
+                request.getSession().setAttribute("user",user.buildInfo());
+                request.getSession().setAttribute("temp","yes");
 
-                request.setAttribute("user",user);
             }
         }
 
-        filterChain.doFilter(request,response);
+        try{
+            filterChain.doFilter(request,response);
+        }finally {
+            HttpSession session = request.getSession();
+            if (session.getAttribute("temp") != null) {
+                session.invalidate();
+            }
+        }
     }
 }
