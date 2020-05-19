@@ -14,7 +14,9 @@ class OrderApplicationTests {
 
 	@Test
 	void contextLoads() {
-		messageService.sendQueueMessage("我的测试消息1");
+		for (int i = 0; i < 15; i++) {
+			messageService.sendQueueMessage("我的测试消息"+i);
+		}
 		messageService.sendTopicMessage("我的测试消息2");
 		messageService.sendTopicMessage("我的测试消息3");
 	}

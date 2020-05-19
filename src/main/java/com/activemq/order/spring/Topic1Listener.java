@@ -7,7 +7,9 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-
+/**
+ *  (Topic模式)异步接收消息监听类
+ */
 public class Topic1Listener implements MessageListener {
     @Override
     public void onMessage(Message message) {

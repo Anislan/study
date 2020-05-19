@@ -8,7 +8,7 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 /**
- * 消息监听类
+ *  异步接收消息
  */
 
 public class QueueListener  implements MessageListener{
@@ -20,7 +20,7 @@ public class QueueListener  implements MessageListener{
             try {
                TextMessage textMessage = (TextMessage) message;
                 String messageStr = textMessage.getText();
-                System.out.println("队列监听器接收到文本消息:"+messageStr);
+                System.out.println("生产者投递消息到MQ成功,消息内容为:"+messageStr);
             } catch (JMSException e) {
                 e.printStackTrace();
             }

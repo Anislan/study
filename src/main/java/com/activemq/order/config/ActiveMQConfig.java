@@ -23,87 +23,149 @@ import javax.jms.ConnectionFactory;
 public class ActiveMQConfig {
 
 
+    /**
+     *   定义连接工厂
+     * @return
+     */
     @Bean
     public ConnectionFactory connectionFactory(){
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnectionFactory.DEFAULT_USER,ActiveMQConnectionFactory.DEFAULT_PASSWORD,"failover://tcp://20.20.60.100:61616");
         return  connectionFactory;
     }
 
+    /**
+     *  池化连接工厂
+     * @return
+     */
     @Bean
     public PooledConnectionFactory pooledConnectionFactory(){
         PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
+        // 设置最大连接数
         pooledConnectionFactory.setMaxConnections(100);
+        // 池化连接工厂
         pooledConnectionFactory.setConnectionFactory(connectionFactory());
         return pooledConnectionFactory;
     }
 
 
+    /**
+     *  连接缓存工厂
+     * @return
+     */
     @Bean
     public CachingConnectionFactory cachingConnectionFactory(){
         CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory();
+        // 缓存连接工厂池
         cachingConnectionFactory.setTargetConnectionFactory(pooledConnectionFactory());
+        // 设置缓存Session大小
         cachingConnectionFactory.setSessionCacheSize(1);
         return cachingConnectionFactory;
     }
 
+    /**
+     *  Spring 对JMS接口进一步封装，解决冗长重复代码
+     * @return
+     */
     @Bean
     public JmsTemplate jmsTemplate(){
         JmsTemplate jmsTemplate = new JmsTemplate();
+        // 设置连接缓存工厂
         jmsTemplate.setConnectionFactory(cachingConnectionFactory());
+        // 配置简单消息转换器
         jmsTemplate.setMessageConverter(new SimpleMessageConverter());
         return jmsTemplate;
     }
 
+    /**
+     *  创建Destination（目的地-队列）
+     * @return
+     */
     @Bean
     public ActiveMQQueue testQueue(){
-        ActiveMQQueue activeMQQueue = new ActiveMQQueue("spring-topic");
+        ActiveMQQueue activeMQQueue = new ActiveMQQueue("spring-queue");
         return activeMQQueue;
     }
 
+    /**
+     *  创建Destination（目的地-pub/sub）
+     * @return
+     */
     @Bean
     public ActiveMQTopic testTopic(){
         ActiveMQTopic activeMQTopic = new ActiveMQTopic("spring-topic");
         return activeMQTopic;
     }
 
+    /**
+     *  (p2p)异步接收消息监听类，MessageListener的实现类
+     * @return
+     */
     @Bean
     public QueueListener queueListener(){
         return new QueueListener();
     }
 
+    /**
+     *  (pub/sub)异步接收消息监听类，MessageListener的实现类
+     * @return
+     */
     @Bean
     public Topic1Listener topic1Listener(){
         return new Topic1Listener();
     }
 
+    /**
+     *  (pub/sub)异步接收消息监听类，MessageListener的实现类
+     * @return
+     */
     @Bean
     public Topic2Listener topic2Listener(){
         return new Topic2Listener();
     }
 
+    /**
+     *  用于将消息监听器绑定到具体的消息目的地上
+     * @return
+     */
     @Bean
     public DefaultMessageListenerContainer queueContainer(){
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
+        // 设置连接缓存工厂
         defaultMessageListenerContainer.setConnectionFactory(cachingConnectionFactory());
+        // 设置队列
         defaultMessageListenerContainer.setDestination(testQueue());
+        // 设置异步消息监听类
         defaultMessageListenerContainer.setMessageListener(queueListener());
         return defaultMessageListenerContainer;
     }
 
+    /**
+     *  用于将消息监听器绑定到具体的消息目的地上
+     * @return
+     */
     @Bean
     public DefaultMessageListenerContainer topic1Container(){
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
+        // 设置连接缓存工厂
         defaultMessageListenerContainer.setConnectionFactory(cachingConnectionFactory());
+        // 设置sub/pub
         defaultMessageListenerContainer.setDestination(testTopic());
+        // 设置异步消息监听类
         defaultMessageListenerContainer.setMessageListener(topic1Listener());
         return defaultMessageListenerContainer;
     }
-
+    /**
+     *  用于将消息监听器绑定到具体的消息目的地上
+     * @return
+     */
     @Bean
     public DefaultMessageListenerContainer topic2Container(){
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
+        // 设置连接缓存工厂
         defaultMessageListenerContainer.setConnectionFactory(cachingConnectionFactory());
+        // 设置sub/pub
         defaultMessageListenerContainer.setDestination(testTopic());
+        // 设置异步消息监听类
         defaultMessageListenerContainer.setMessageListener(topic2Listener());
         return defaultMessageListenerContainer;
     }
