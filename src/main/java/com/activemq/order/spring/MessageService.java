@@ -45,4 +45,11 @@ public class MessageService {
             return message;
         });
     }
+
+
+    // 消费消息(同步的消费消息)
+    public  void reciveQueueMessage() throws JMSException {
+        TextMessage message =(TextMessage)jmsTemplate.receive(testQueue);
+        System.out.println(message.getText());
+    }
 }

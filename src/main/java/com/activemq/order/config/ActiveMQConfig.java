@@ -150,7 +150,7 @@ public class ActiveMQConfig {
         defaultMessageListenerContainer.setConnectionFactory(cachingConnectionFactory());
         // 设置sub/pub
         defaultMessageListenerContainer.setDestination(testTopic());
-        // 设置异步消息监听类
+        // 设置异步消息消费类
         defaultMessageListenerContainer.setMessageListener(topic1Listener());
         return defaultMessageListenerContainer;
     }

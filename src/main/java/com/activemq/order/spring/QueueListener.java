@@ -8,7 +8,7 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 /**
- *  异步接收消息
+ *  消费者异步消费消息
  */
 
 public class QueueListener  implements MessageListener{
