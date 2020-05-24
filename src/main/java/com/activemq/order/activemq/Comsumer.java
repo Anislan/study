@@ -17,7 +17,7 @@ public class Comsumer {
     public static final String PASSWORD = ActiveMQConnection.DEFAULT_PASSWORD;
 
     // ActiveMQ服务器
-    public static final String BROKER_URL = "failover:tcp://20.20.60.100:61616";
+    public static final String BROKER_URL = "failover:tcp://####";
 
     public static void main(String[] args) {
             // 创建连接工厂
