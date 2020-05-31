@@ -1,6 +1,7 @@
 package com.activemq.order.spring;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,9 @@ public class MessageService {
     @Resource(name = "testTopic")
     private Destination testTopic;
 
+
+    private JmsMessagingTemplate jmsMessagingTemplate = new JmsMessagingTemplate();
+
     // 向队列发送消息
     public void sendQueueMessage(String messageContent) {
         jmsTemplate.send(testQueue,
@@ -34,6 +38,8 @@ public class MessageService {
                 }
 
         );
+
+        // 保存消息到数据库吗
     }
 
     // 向主题发送消息

@@ -12,6 +12,7 @@ import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
@@ -29,7 +30,8 @@ public class ActiveMQConfig {
      */
     @Bean
     public ConnectionFactory connectionFactory(){
-        ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnectionFactory.DEFAULT_USER,ActiveMQConnectionFactory.DEFAULT_PASSWORD,"failover://tcp://20.20.60.100:61616");
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnectionFactory.DEFAULT_USER,ActiveMQConnectionFactory.DEFAULT_PASSWORD,"failover://tcp://20.20.60.100:61616");
+//        connectionFactory.setRedeliveryPolicy();
         return  connectionFactory;
     }
 
@@ -37,15 +39,15 @@ public class ActiveMQConfig {
      *  池化连接工厂
      * @return
      */
-    @Bean
-    public PooledConnectionFactory pooledConnectionFactory(){
-        PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
-        // 设置最大连接数
-        pooledConnectionFactory.setMaxConnections(100);
-        // 池化连接工厂
-        pooledConnectionFactory.setConnectionFactory(connectionFactory());
-        return pooledConnectionFactory;
-    }
+//    @Bean
+//    public PooledConnectionFactory pooledConnectionFactory(){
+//        PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
+//        // 设置最大连接数
+//        pooledConnectionFactory.setMaxConnections(1000);
+//        // 池化连接工厂
+//        pooledConnectionFactory.setConnectionFactory(connectionFactory());
+//        return pooledConnectionFactory;
+//    }
 
 
     /**
@@ -56,7 +58,7 @@ public class ActiveMQConfig {
     public CachingConnectionFactory cachingConnectionFactory(){
         CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory();
         // 缓存连接工厂池
-        cachingConnectionFactory.setTargetConnectionFactory(pooledConnectionFactory());
+        cachingConnectionFactory.setTargetConnectionFactory(connectionFactory());
         // 设置缓存Session大小
         cachingConnectionFactory.setSessionCacheSize(1);
         return cachingConnectionFactory;
@@ -69,8 +71,9 @@ public class ActiveMQConfig {
     @Bean
     public JmsTemplate jmsTemplate(){
         JmsTemplate jmsTemplate = new JmsTemplate();
+//        jmsTemplate.setQosSettings();
         // 设置连接缓存工厂
-        jmsTemplate.setConnectionFactory(cachingConnectionFactory());
+        jmsTemplate.setConnectionFactory(connectionFactory());
         // 配置简单消息转换器
         jmsTemplate.setMessageConverter(new SimpleMessageConverter());
         return jmsTemplate;
@@ -83,6 +86,7 @@ public class ActiveMQConfig {
     @Bean
     public ActiveMQQueue testQueue(){
         ActiveMQQueue activeMQQueue = new ActiveMQQueue("spring-queue");
+
         return activeMQQueue;
     }
 
@@ -127,15 +131,16 @@ public class ActiveMQConfig {
      *  用于将消息监听器绑定到具体的消息目的地上
      * @return
      */
-    @Bean
     public DefaultMessageListenerContainer queueContainer(){
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         // 设置连接缓存工厂
-        defaultMessageListenerContainer.setConnectionFactory(cachingConnectionFactory());
+        defaultMessageListenerContainer.setConnectionFactory(connectionFactory());
         // 设置队列
         defaultMessageListenerContainer.setDestination(testQueue());
         // 设置异步消息监听类
         defaultMessageListenerContainer.setMessageListener(queueListener());
+//        defaultMessageListenerContainer.setBackOff();
+
         return defaultMessageListenerContainer;
     }
 
@@ -147,7 +152,7 @@ public class ActiveMQConfig {
     public DefaultMessageListenerContainer topic1Container(){
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         // 设置连接缓存工厂
-        defaultMessageListenerContainer.setConnectionFactory(cachingConnectionFactory());
+        defaultMessageListenerContainer.setConnectionFactory(connectionFactory());
         // 设置sub/pub
         defaultMessageListenerContainer.setDestination(testTopic());
         // 设置异步消息消费类
@@ -162,7 +167,7 @@ public class ActiveMQConfig {
     public DefaultMessageListenerContainer topic2Container(){
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         // 设置连接缓存工厂
-        defaultMessageListenerContainer.setConnectionFactory(cachingConnectionFactory());
+        defaultMessageListenerContainer.setConnectionFactory(connectionFactory());
         // 设置sub/pub
         defaultMessageListenerContainer.setDestination(testTopic());
         // 设置异步消息监听类
